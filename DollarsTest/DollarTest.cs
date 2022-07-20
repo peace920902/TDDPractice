@@ -1,82 +1,54 @@
-﻿using Xunit;
+﻿using System.Collections.Generic;
+using Xunit;
 
 namespace DollarsTest;
 
 public class DollarTest
 {
     [Fact]
-    public void TestMultiplication()
-    {
-        var dollar = new Dollar(5);
-        Assert.Equal(new Dollar(10) , dollar.Times(2));
-        Assert.Equal(new Dollar(15), dollar.Times(3));
-    }
-
-    [Fact]
-    public void TestMultiplication_Franc()
-    {
-        var dollar = new Franc(5);
-        Assert.Equal(new Franc(10) , dollar.Times(2));
-        Assert.Equal(new Franc(15), dollar.Times(3));
-    }
-    
-    [Fact]
     public void TestEquality()
     {
-        Assert.True(new Dollar(5).Equals(new Dollar(5)));
-        Assert.False(new Dollar(5).Equals(new Dollar(6)));
-        Assert.True(new Franc(5).Equals(new Franc(5)));
-        Assert.False(new Franc(5).Equals(new Franc(6)));
+        Assert.True(Money.Dollar(5).Equals(Money.Dollar(5)));
+        Assert.True(Money.Franc(10).Equals(Money.Franc(5).Times(2)));
     }
 }
 
 public class Money
 { 
     protected internal int Amount { get; set; }
-    
-    public override bool Equals(object? obj)
-    {
-        var money = (Money)obj;
-        return this.Amount == money.Amount;
-    }
-}
+    protected internal string Currency { get; set; }
 
-/// <summary>
-/// 法郎
-/// </summary>
-public class Franc: Money
-{
-    public Franc(int amount)
+    public Money(int amount, string currency)
     {
         Amount = amount;
+        Currency = currency;
     }
 
-    public Franc Times(int multiplier)
+    internal static Money Dollar(int amount)
     {
-        var total = Amount * multiplier;
-        return new Franc(total);
+        return new Money(amount,"USD");
     }
-    
+
+    internal static Money Franc(int amount)
+    {
+        return new Money(amount,"CHT");
+    }
+
     public override bool Equals(object? obj)
     {
-        Money money = (Franc)obj;
-        return this.Amount == money.Amount;
-    }
-}
-
-/// <summary>
-/// 美元
-/// </summary>
-public class Dollar: Money
-{
-    public Dollar(int amount)
-    {
-        Amount = amount;
+        var money = (Money?)obj;
+        return this.Amount == money?.Amount
+                           && Currency.Equals(money.Currency);
     }
 
-    public Dollar Times(int multiplier)
+    public Money Times(int multiplier)
     {
         var total = Amount * multiplier;
-        return new Dollar(total);
+        return new Money(total, Currency);
     }
+
+    //public string GetCurrency()
+    //{
+    //    return Currency;
+    //}
 }
